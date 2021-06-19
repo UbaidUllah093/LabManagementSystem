@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -83,9 +84,15 @@ public class BookTest extends AppCompatActivity implements SearchView.OnQueryTex
             @Override
             public void onClick(View v) {
 
-                mydb.addNewOrdre(String.valueOf(sp_test.getSelectedItem()),mData);
-                finish();
-                startActivity(new Intent(getApplicationContext(),Dashboard.class));
+                //Toast.makeText(BookTest.this, "spinner" + (CharSequence) sp_test.getSelectedItem(), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(BookTest.this, "listview" + mData.size(), Toast.LENGTH_SHORT).show();
+                if (sp_test.getSelectedItem() == "No Record Found" || mData.size() == 0)
+                    Toast.makeText(BookTest.this, "Required Input is Missing!", Toast.LENGTH_SHORT).show();
+                else {
+                    mydb.addNewOrdre(String.valueOf(sp_test.getSelectedItem()), mData);
+                    finish();
+                    startActivity(new Intent(getApplicationContext(), Dashboard.class));
+                }
 
             }
         });
