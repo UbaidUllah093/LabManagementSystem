@@ -9,12 +9,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 public class newCustomer extends AppCompatActivity {
 
     EditText et_name,et_address,et_cnic,et_number,et_age;
     Button btn_saveCustomer;
-    Switch sw_gender;
+    ToggleButton sw_gender;
     DBHelper mydb;
     @Override
     protected void onCreate(Bundle savedInstanceState) {

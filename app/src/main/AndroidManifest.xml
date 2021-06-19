@@ -9,7 +9,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.LabManagementSystem">
-        <activity android:name=".new_test"></activity>
+        <activity android:name=".PendingSchedule"></activity>
+        <activity android:name=".BookTest" />
+        <activity android:name=".new_test" />
         <activity android:name=".ForgotActivity" />
         <activity android:name=".ViewCustomer" />
         <activity android:name=".ViewTests" />

@@ -189,21 +189,20 @@
                 android:textColor="@color/black"
                 android:textStyle="bold" />
 
-            <Switch
+            <ToggleButton
                 android:id="@+id/switch_gender"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginRight="16dp"
-                android:checked="true"
-                android:showText="true"
-                android:textColor="@color/white"
-                android:textColorHighlight="@color/black"
-                android:textColorLink="@color/black"
-                android:textOff="Female"
-                android:textOn="Male" />
+                android:background="#03A9F4"
+                android:text="ToggleButton"
+                android:textColor="#FFFFFF"
+                android:textOff="Male"
+                android:textOn="Female" />
+
         </LinearLayout>
 
     </LinearLayout>

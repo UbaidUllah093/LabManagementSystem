@@ -9,10 +9,13 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 public class Dashboard extends AppCompatActivity {
 
     Button btn_createCustomer, btn_logout;
     GridView gv_dash;
+    FloatingActionButton fab_book;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,22 +24,30 @@ public class Dashboard extends AppCompatActivity {
 
         btn_logout = findViewById(R.id.btn_logout);
         gv_dash = findViewById(R.id.gv_dash);
+        fab_book = findViewById(R.id.floatingActionButton);
 
         int homescreen[] = {
                 R.drawable.database,
                 R.drawable.search,
                 R.drawable.test,
-                R.drawable.time,
-                R.drawable.schedule
+                R.drawable.time
+                //R.drawable.schedule
         };
 
         String image_details[] = {
                 "Add Customer",
                 "View Customer",
                 "View Test",
-                "Pending Reports",
-                "Schedule"
+                "Pending Reports"
+                //"Schedule"
         };
+
+        fab_book.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getApplicationContext(),BookTest.class));
+            }
+        });
 
         GridViewAdapter_Dashboard adapter = new GridViewAdapter_Dashboard(this, homescreen, image_details);
         gv_dash.setAdapter(adapter);
@@ -64,7 +75,9 @@ public class Dashboard extends AppCompatActivity {
                                                    case 2:
                                                        intent = new Intent(getApplicationContext(), ViewTests.class);
                                                        break;
-
+                                                   case 3:
+                                                       intent = new Intent(getApplicationContext(),PendingSchedule.class);
+                                                       break;
                                                    default:
                                                        intent = null;
                                                        break;

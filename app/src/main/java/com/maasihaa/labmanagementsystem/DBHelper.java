@@ -3,6 +3,7 @@ package com.maasihaa.labmanagementsystem;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -48,6 +49,15 @@ public class DBHelper extends SQLiteOpenHelper {
                 "create table Report " +
                         "(id integer primary key, ReportName text,Time text)"
         );
+        db.execSQL(
+                "create table Ordre " +
+                        "(id integer primary key, CustomerID text,TestID text)"
+        );
+        db.execSQL(
+                "create table MultiTest " +
+                        "(id integer, TestID text)"
+        );
+
     }
 
     @Override
@@ -82,10 +92,98 @@ public class DBHelper extends SQLiteOpenHelper {
         return true;
     }
 
-    public Cursor getData(int id) {
+    public boolean addNewOrdre (String CustomerID,ArrayList<String> testPrice) {
+
+        for (int i=0; i<testPrice.size();i++) {
+            SQLiteDatabase db = this.getWritableDatabase();
+            int numRows = (int) DatabaseUtils.queryNumEntries(db, "Ordre");
+            ContentValues contentValues = new ContentValues();
+            int iend = testPrice.get(i).indexOf("-");
+            String subString = null;
+            if (iend != -1)
+            {
+                subString= testPrice.get(i).substring(0 , iend); //this will give abc
+            }
+
+            contentValues.put("id", numRows + 1);
+            contentValues.put("TestID", subString);
+
+            db.insert("MultiTest", null, contentValues);
+        }
+
+        //db.insert("MultiTest", null, contentValues);
+
+        SQLiteDatabase db2 = this.getWritableDatabase();
+        int numRows = (int) DatabaseUtils.queryNumEntries(db2, "Ordre");
+        ContentValues contentValues2 = new ContentValues();
+        int iend = CustomerID.indexOf("-");
+        String subString = null;
+        if (iend != -1)
+        {
+            subString= CustomerID.substring(0 , iend); //this will give abc
+        }
+
+        contentValues2.put("CustomerID", subString);
+        contentValues2.put("TestID", numRows+1);
+        db2.insert("Ordre", null, contentValues2);
+
+        return true;
+    }
+
+    public ArrayList<String> getCustomerName(String id) {
+        ArrayList<String> array_list = new ArrayList<String>();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res =  db.rawQuery( "select * from book where id="+id+"", null );
-        return res;
+        Cursor res =  db.rawQuery( "select * from Customer where id="+id+"", null );
+        res.moveToFirst();
+
+        while(res.isAfterLast() == false){
+            array_list.add(res.getString(res.getColumnIndex("CustomerName")));
+            res.moveToNext();
+        }
+        return array_list;
+    }
+
+    public ArrayList<String> getCustomerDetail(String id) {
+        ArrayList<String> array_list = new ArrayList<String>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        int iend = id.indexOf("-");
+        String subString = null;
+        if (iend != -1)
+        {
+            id = id.substring(0 , iend); //this will give abc
+        }
+
+        Cursor res =  db.rawQuery( "select * from Customer where id="+id+"", null );
+        res.moveToFirst();
+
+        while(res.isAfterLast() == false){
+            array_list.add(res.getString(res.getColumnIndex("CustomerName")));
+            array_list.add(res.getString(res.getColumnIndex("Number")));
+            array_list.add(res.getString(res.getColumnIndex("Age")));
+            array_list.add(res.getString(res.getColumnIndex("Gender")));
+            res.moveToNext();
+        }
+        return array_list;
+    }
+
+    public ArrayList<String> getTestName(String id) {
+        ArrayList<String> array_list = new ArrayList<String>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res =  db.rawQuery( "select * from MultiTest where id="+id+"", null );
+        res.moveToFirst();
+
+        while(res.isAfterLast() == false){
+            String testId = res.getString(res.getColumnIndex("TestID"));
+            Cursor res2 =  db.rawQuery( "select * from Test where id="+testId+"", null );
+            res2.moveToFirst();
+            while(res2.isAfterLast() == false) {
+                array_list.add(res2.getString(res2.getColumnIndex("TestName")));
+                res2.moveToNext();
+            }
+            res.moveToNext();
+        }
+        return array_list;
     }
 
     public int numberOfRows(){
@@ -96,11 +194,14 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
 
-    public Integer deleteBooks (Integer id) {
+    public Integer deleteBooks (CharSequence id) {
         SQLiteDatabase db = this.getWritableDatabase();
-        return db.delete("book",
-                "id = ? ",
-                new String[] { Integer.toString(id) });
+        return db.delete("Test","TestName = ? ",new String[] {String.valueOf(id)});
+    }
+
+    public Integer deletePending (CharSequence id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.delete("Ordre","TestID = ? ",new String[] {String.valueOf(id)});
     }
 
     public ArrayList<String> getCustomers() {
@@ -112,7 +213,22 @@ public class DBHelper extends SQLiteOpenHelper {
         res.moveToFirst();
 
         while(res.isAfterLast() == false){
-            array_list.add(res.getString(res.getColumnIndex("CustomerName")));// + "     Number:  " + res.getString(res.getColumnIndex("Number")));
+            array_list.add(res.getString(res.getColumnIndex("id")) + "-" + res.getString(res.getColumnIndex("CustomerName")));// + "     Number:  " + res.getString(res.getColumnIndex("Number")));
+            res.moveToNext();
+        }
+        return array_list;
+    }
+
+    public ArrayList<String> getTestNames() {
+        ArrayList<String> array_list = new ArrayList<String>();
+
+        //hp = new HashMap();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res =  db.rawQuery( "select * from Test", null );
+        res.moveToFirst();
+
+        while(res.isAfterLast() == false){
+            array_list.add(res.getString(res.getColumnIndex("id")) + "-" + res.getString(res.getColumnIndex("TestName")));// + "     Number:  " + res.getString(res.getColumnIndex("Number")));
             res.moveToNext();
         }
         return array_list;
@@ -138,6 +254,29 @@ public class DBHelper extends SQLiteOpenHelper {
             //mainArrayList.add(array_list);
             res.moveToNext();
         }
+        return res;
+    }
+
+    public Cursor getPendingScheduleComplete() {
+
+        //ArrayList<ArrayList<String>> mainArrayList = new ArrayList<ArrayList<String>>();
+        ArrayList<String> array_list = new ArrayList<String>();
+        //mainArrayList.add(array_list);
+
+        //hp = new HashMap();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res =  db.rawQuery( "select * from Ordre", null );
+        res.moveToFirst();
+
+        //while(res.isAfterLast() == false){
+            //array_list.add(res);
+            //array_list.clear();
+            //array_list.add(res.getString(res.getColumnIndex("TestName")));
+            //array_list.add(res.getString(res.getColumnIndex("Price")));
+            //array_list.add(res.getString(res.getColumnIndex("Time")));
+            //mainArrayList.add(array_list);
+            //res.moveToNext();
+        //}
         return res;
     }
 
